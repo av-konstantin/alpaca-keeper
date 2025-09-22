@@ -1,15 +1,13 @@
 # Build stage
-FROM eclipse-temurin:23-jdk AS build
+FROM maven:3.9.9-eclipse-temurin-23 AS build
 WORKDIR /workspace
 
-# Copy project files
+# Copy project files (leverage Docker cache by copying pom first)
+COPY pom.xml .
+RUN mvn -B -q -DskipTests dependency:go-offline
+
 COPY . .
-
-# Ensure Maven Wrapper is executable (if present)
-RUN chmod +x mvnw || true
-
-# Build the application (skip tests for faster image build)
-RUN ./mvnw -B -DskipTests package || mvn -version && mvn -B -DskipTests package
+RUN mvn -B -DskipTests package
 
 # Runtime stage
 FROM eclipse-temurin:23-jre
