@@ -31,15 +31,14 @@ jobs:
           tenant-id: ${{ secrets.ALPACAKEEPER_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.ALPACAKEEPER_AZURE_SUBSCRIPTION_ID }}
 
-      - name: ACR login
-        run: az acr login --name avsandboxacr
-
       - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}
           dockerfilePath: ./Dockerfile
           registryUrl: avsandboxacr.azurecr.io
+          registryUsername: ${{ secrets.ACR_USERNAME }}
+          registryPassword: ${{ secrets.ACR_PASSWORD }}
           containerAppName: alpaca-keeper
           resourceGroup: AVSandboxRessources
           imageToBuild: avsandboxacr.azurecr.io/alpaca-keeper:${{ github.sha }}
