@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Alpaca Keeper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --bg1:#0a0014; /* deep space */
+            --bg2:#17002a; /* nebula */
+            --neon1:#ff2bd6; /* magenta */
+            --neon2:#22e6ff; /* cyan */
+            --neon3:#ffe066; /* warm glow */
+            --card:#12011f; /* panel */
+            --text:#f3f6ff;
+            --muted:#9aa3b2;
+        }
+        html,body{height:100%;}
+        body{
+            margin:0;
+            color:var(--text);
+            background: radial-gradient(1200px 800px at 80% -10%, rgba(255,43,214,.2), transparent 60%),
+                        radial-gradient(1200px 800px at 20% -10%, rgba(34,230,255,.18), transparent 60%),
+                        linear-gradient(180deg,var(--bg1),var(--bg2) 40%, #000 100%);
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif;
+        }
+        .frame{
+            min-height:100%;
+            display:flex;flex-direction:column;
+        }
+        header{
+            padding:2.5rem 1.25rem 1rem;
+            text-align:center;
+        }
+        .logo{
+            font-family:"Press Start 2P", system-ui;
+            font-size:1.6rem;
+            line-height:1.2;
+            letter-spacing:2px;
+            text-shadow: 0 0 6px var(--neon2), 0 0 18px var(--neon1);
+            color:var(--text);
+        }
+        .subtitle{
+            margin-top:.75rem;
+            font-family:"Orbitron", system-ui;
+            letter-spacing:1px;
+            color:var(--muted);
+            text-shadow:0 0 6px rgba(34,230,255,.35);
+            font-size:.9rem;
+        }
+        .container{max-width:920px;margin:0 auto;padding:0 1.25rem 6rem;}
+        .panel{
+            background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.005));
+            border:1px solid rgba(34,230,255,.25);
+            box-shadow:
+               0 0 0 2px rgba(34,230,255,.08) inset,
+               0 12px 40px rgba(0,0,0,.55),
+               0 0 24px rgba(34,230,255,.2);
+            border-radius:14px;
+            padding:1.25rem;
+            backdrop-filter: blur(4px);
+        }
+        .grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-top:1rem;}
+        @media (min-width: 780px){ .grid{ grid-template-columns: 1.2fr .8fr; } }
+        h2{
+            font-family:"Orbitron", system-ui;
+            font-weight:700;
+            letter-spacing:1px;
+            margin:0 0 .75rem;
+            color:var(--text);
+            text-shadow:0 0 10px rgba(255,43,214,.25), 0 0 14px rgba(34,230,255,.25);
+        }
+        /* Form */
+        .form-row{display:flex; gap:.6rem; align-items:center;}
+        .input{
+            flex:1;
+            padding:.8rem 1rem;
+            border-radius:10px;
+            border:1px solid rgba(255,43,214,.35);
+            background: rgba(10,0,20,.55);
+            color:var(--text);
+            outline:none;
+            box-shadow:0 0 0 2px rgba(255,43,214,.08) inset, 0 0 12px rgba(255,43,214,.15);
+        }
+        .input:focus{
+            border-color:var(--neon2);
+            box-shadow:0 0 0 2px rgba(34,230,255,.2) inset, 0 0 18px rgba(34,230,255,.35);
+        }
+        .btn{
+            padding:.85rem 1.1rem;
+            border-radius:10px;
+            border:1px solid rgba(34,230,255,.45);
+            background: linear-gradient(180deg, rgba(34,230,255,.25), rgba(34,230,255,.12));
+            color:var(--text);
+            font-weight:600;
+            letter-spacing:.5px;
+            cursor:pointer;
+            text-shadow:0 0 8px rgba(34,230,255,.6);
+            box-shadow: 0 0 0 2px rgba(34,230,255,.08) inset, 0 8px 18px rgba(0,0,0,.45), 0 0 16px rgba(34,230,255,.25);
+        }
+        .btn:hover{ filter:brightness(1.1); }
+        .btn:active{ transform: translateY(1px); }
+        /* List */
+        ul{ list-style:none; margin:0; padding:0; }
+        li{ padding:.65rem .75rem; border-bottom:1px dashed rgba(255,255,255,.08); display:flex; align-items:center; gap:.5rem; }
+        li::before{ content:"▸"; color:var(--neon3); text-shadow:0 0 6px rgba(255,224,102,.6); }
+        .empty{ color:var(--muted); font-style:italic; }
+        /* Time badge */
+        .time{ display:inline-flex; align-items:center; gap:.4rem; font-size:.85rem; color:var(--muted); }
+        .dot{ width:8px; height:8px; border-radius:50%; background:var(--neon2); box-shadow:0 0 10px var(--neon2), 0 0 18px var(--neon1); }
+        /* Retro grid at the bottom */
+        .floor{ position:fixed; inset:auto 0 0 0; height:42vh; background: linear-gradient(0deg, rgba(0,0,0,.9), rgba(0,0,0,0)); pointer-events:none; }
+        .gridlines{ position:absolute; inset:auto 0 0 0; height:38vh; background:
+            linear-gradient(#1dd3f380 1px, transparent 1px),
+            linear-gradient(90deg, #1dd3f380 1px, transparent 1px);
+            background-size: 40px 28px;
+            transform: perspective(500px) rotateX(65deg);
+            transform-origin: bottom;
+            box-shadow: 0 0 24px rgba(34,230,255,.35);
+            opacity:.55;
+        }
+        footer{ text-align:center; color:var(--muted); padding:1rem; font-family:"Orbitron", system-ui; font-size:.85rem; }
+        a{ color: var(--neon2); text-decoration: none; }
+        a:hover{ text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="frame">
+    <header>
+        <div class="logo">ALPACA KEEPER</div>
+        <div class="subtitle">Ranch management — keep those floofs on schedule</div>
+    </header>
+
+    <div class="container">
+        <div class="grid">
+            <section class="panel">
+                <h2>Add a new alpaca</h2>
+                <form method="post" action="/alpaca" class="form" autocomplete="off">
+                    <div class="form-row">
+                        <label for="name" class="sr-only">New Alpaca</label>
+                        <input id="name" class="input" type="text" name="name" minlength="1" maxlength="280" placeholder="e.g. Neon Thunder" required />
+                        <button class="btn" type="submit">Add</button>
+                    </div>
+                </form>
+                <div class="time"><span class="dot"></span><span>Now:</span><span th:text="${now}">2025-01-01T00:00:00Z</span></div>
+            </section>
+
+            <section class="panel">
+                <h2>Alpacas</h2>
+                <ul>
+                    <li th:if="${#lists.isEmpty(alpacas)}" class="empty"><em>No alpacas yet.</em></li>
+                    <li th:each="m : ${alpacas}">
+                        <span th:text="${m.name}">Name</span>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    </div>
+
+    <div class="floor"><div class="gridlines"></div></div>
+    <footer>Made with <span style="color:var(--neon1)">❤</span> by your future colleague</footer>
+</div>
+</body>
+</html>

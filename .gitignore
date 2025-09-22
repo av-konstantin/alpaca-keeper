@@ -1,0 +1,42 @@
+# Maven
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.jar
+
+# Maven Wrapper logs
+.mvn/wrapper/maven-wrapper.properties.backup
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+.npm/
+
+# Logs
+logs/
+*.log
+
+# Java
+*.class
+hs_err_pid*
+replay_pid*
+
+.env
+/.mvn/wrapper/maven-wrapper.properties
